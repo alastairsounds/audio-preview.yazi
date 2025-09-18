@@ -5,7 +5,7 @@ function M:peek(job)
 	if not cache or self:preload() ~= 1 then
 		return
 	end	
-	ya.sleep(math.max(0, PREVIEW.image_delay / 1000 + start - os.clock()))
+	ya.sleep(math.max(0, 0.1 + start - os.clock()))
 	ya.image_show(cache, job.area)
 	ya.preview_widgets(job, {})
 end
@@ -20,6 +20,7 @@ function M:seek(job, units)
 end
 
 function M:preload(job)
+    ya.dbg("Preloading audio-preview ***")
 	if not job then
 		return 1
 	end
@@ -41,14 +42,14 @@ function M:preload(job)
 
     -- generate image
 	ya.err("Calling sox for: " .. tostring(job.file.url) .. ", cache: " .. tostring(cache))
-	local child, code = Command("sox"):args({
-		tostring(job.file.url),
-		"-n", "trim", "0:00", "1:00",
-		"remix", "1",
-		"rate", "12k",
-		"spectrogram",
-		"-o", tostring(cache)
-	}):spawn()
+	local child, code = Command("sox")
+		:arg({tostring(job.file.url),
+		     "-n", "trim", "0:00", "1:00",
+		     "remix", "1",
+		     "rate", "12k",
+		     "spectrogram",
+		     "-o", tostring(cache)})
+		:spawn()
 
 	if not child then
 		ya.err("spawn `sox` command returns " .. tostring(code))
