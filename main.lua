@@ -7,7 +7,6 @@ function M:peek(job)
 	end	
 	ya.sleep(math.max(0, 0.1 + start - os.clock()))
 	ya.image_show(cache, job.area)
-	ya.preview_widgets(job, {})
 end
 
 
